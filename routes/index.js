@@ -1,10 +1,9 @@
 let express = require("express");
 let router = express.Router();
-let test = require("../controller/reportContr");
 
 /* GET home page. */
 router.get("/", function (req, res) {
-  res.send("ok");
+  res.send("Not Found");
 });
 
 module.exports = router;

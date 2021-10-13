@@ -7,7 +7,7 @@ module.exports = {
     port: "3306",
     user: "root",
     password: "123",
-    database: "test",
+    database: "report",
   },
   // 连接数据库，使用mysql连接池连接方式
   sqlConnect(sql, sqlArr, callBack) {

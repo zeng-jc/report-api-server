@@ -1,11 +1,18 @@
 var createError = require("http-errors");
 var express = require("express");
+let bodyParser = require("body-parser");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
+// 解析提交的json参数
+let jsonParser = bodyParser.json();
+// 解析提交的form表单参数
+let urlencodedParser = bodyParser.urlencoded({ extended: true });
+
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var reportRouter = require("./routes/report");
 
 var app = express();
 
@@ -30,5 +37,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/api/private/v1", jsonParser, reportRouter);
 
 server.listen("3000");
