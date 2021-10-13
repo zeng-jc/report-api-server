@@ -13,7 +13,6 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
-    "multiparty": "^4.2.2",
     "mysql": "^2.18.1"
   }
 }
