@@ -61,8 +61,10 @@ function addReport(req, res) {
 
 // 报修列表
 function reportList(req, res) {
-  console.log("这是get请求");
-  let sql = "select * from rp_data";
+  const u_phone = req.query.u_phone;
+  // 不是电话号码则直接 return
+  if (!/^1[3456789]\d{9}$/.test(Number(u_phone))) return;
+  let sql = "select * from rp_data where u_phone = " + u_phone;
   let sqlArr = [];
   let callBack = (err, data) => {
     if (err) {
