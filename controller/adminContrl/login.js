@@ -3,7 +3,7 @@ const dbconfig = require("../../util/dbconfig.js");
 // token
 const jwt = require("jsonwebtoken");
 // 加密规则
-const secret = "access_api_after_login";
+const { secret } = require("../../config/tokenSecret.js");
 
 function login(req, res, next) {
   const { username, password } = req.body;
