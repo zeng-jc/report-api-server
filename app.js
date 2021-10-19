@@ -1,22 +1,19 @@
 var createError = require("http-errors");
 var express = require("express");
-let bodyParser = require("body-parser");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+var sendResult = require("./common/sendResult");
 
-// 解析提交的json参数
-let jsonParser = bodyParser.json();
-// 解析提交的form表单参数
-let urlencodedParser = bodyParser.urlencoded({ extended: true });
-
+// 导入路由文件
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+var adminRouter = require("./routes/admin");
 var reportRouter = require("./routes/report");
 
 var app = express();
+// 统一返回接口
+app.use(sendResult);
 
-// 解决跨域
 //后端添加请求头解决跨域
 app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -31,12 +28,17 @@ app.all("*", function (req, res, next) {
 var http = require("http");
 var server = http.createServer(app);
 
+// 设置解析参数
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// 路由
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/api/private/v1", jsonParser, reportRouter);
+// 前台报修的接口
+app.use("/api/report/v1", reportRouter);
+// 后台管理系统的接口
+app.use("/api/admin/v1/", adminRouter);
 
 server.listen("3000");
