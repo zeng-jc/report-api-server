@@ -7,9 +7,9 @@ const path = require("path");
 
 module.exports = function (req, res) {
   //接收前台数据
-  const { u_name, u_phone, u_identity, address, d_address, rp_describe, rp_time, rp_state } = req.body;
+  const { u_name, u_mobile, u_identity, address, d_address, rp_describe, rp_time, rp_state } = req.body;
   // 电话号码不符合直接 return
-  if (!/^1[3456789]\d{9}$/.test(u_phone)) return res.sendResult(null, 422, "电话号码格式错误");
+  if (!/^1[3456789]\d{9}$/.test(u_mobile)) return res.sendResult(null, 422, "电话号码格式错误");
   /**
    * 图片处理
    */
@@ -37,9 +37,9 @@ module.exports = function (req, res) {
 
   let sql = `
   insert into rp_record
-  (u_name, u_phone, u_identity, address, d_address, rp_pic, rp_describe, rp_time, rp_state) 
+  (u_name, u_mobile, u_identity, address, d_address, rp_pic, rp_describe, rp_time, rp_state) 
   values 
-  ("${u_name}", "${u_phone}", "${u_identity}", "${address}", "${d_address}", 
+  ("${u_name}", "${u_mobile}", "${u_identity}", "${address}", "${d_address}", 
   "${img_arr}", "${rp_describe}", "${rp_time}","${rp_state}")`;
   sql = sql.replace(/\n|\r/g, "");
   let sqlArr = [];
