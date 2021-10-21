@@ -19,7 +19,7 @@ function login(req, res, next) {
       const { mg_id, mg_name } = data[0];
       // 2.返回token，并设置过期时间为1天
       const token = jwt.sign({ mg_id, mg_name }, secret, { expiresIn: 60 * 60 * 24 });
-      res.sendResult({ token }, 200, "管理员登录成功");
+      res.sendResult({ token, mg_name }, 200, "管理员登录成功");
     }
   };
   dbconfig.sqlConnect(sql, sqlArr, callBack);

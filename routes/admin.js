@@ -5,7 +5,7 @@ var router = express.Router();
 let isAdmin = require("../controller/adminContrl/isAdmin.js");
 // 路由处理函数
 let { login } = require("../controller/adminContrl/login.js");
-let record = require("../controller/adminContrl/record.js");
+let { record } = require("../controller/adminContrl/record.js");
 
 /* GET users listing. */
 router.post("/login", login);
