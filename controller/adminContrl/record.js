@@ -13,7 +13,7 @@ function record(req, res) {
   // 分页查询伪代码：sql： "select * from rp_record limit offset, pagesize";
   // let sql = "select * from rp_record limit" + offset + "," + pagesize;
   // let sqlCount = "select count(*) from rp_record";
-  let sql = "select *, count(*) over() as total from rp_record limit " + offset + "," + pagesize;
+  let sql = "select *, count(*) over() as total from rp_record order by u_id desc limit " + offset + "," + pagesize;
   let sqlArr = [];
   let callback = (err, data) => {
     if (err) {
