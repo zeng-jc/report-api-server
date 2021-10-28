@@ -12,13 +12,12 @@ function record(req, res) {
   let queryKey;
   const currentpage = Number(req.query.currentpage);
   const pagesize = Number(req.query.pagesize);
-  if (query !== "" && Object.prototype.toString.call(JSON.parse(query)).slice(8, -1) === "Object") {
-    query = JSON.parse(query);
-    queryKey = Object.keys(query)[0];
-  }
-
   if (!/^\d+$/.test(currentpage) || !currentpage >= 1 || !/^\d+$/.test(pagesize)) {
     return res.sendResult(null, 422, "参数有误");
+  }
+  if (query !== undefined && Object.prototype.toString.call(JSON.parse(query)).slice(8, -1) === "Object") {
+    query = JSON.parse(query);
+    queryKey = Object.keys(query)[0];
   }
   // 偏移量。分页查询伪代码：sql： "select * from rp_record limit offset, pagesize";
   let offset = (currentpage - 1) * pagesize;
@@ -41,7 +40,7 @@ function record(req, res) {
     }
     let sql;
     //2.获取报修列表
-    if (queryKey === "u_name" || queryKey === "u_mobile" || queryKey === "address") {
+    if (queryKey === "u_name" || queryKey === "u_mobile") {
       sql =
         "select * from rp_record where " +
         queryKey +

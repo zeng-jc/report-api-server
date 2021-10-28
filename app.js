@@ -9,6 +9,8 @@ var sendResult = require("./common/sendResult");
 var indexRouter = require("./routes/index");
 var adminRouter = require("./routes/admin");
 var reportRouter = require("./routes/report");
+// 测试接口
+var testRouter = require("./routes/test");
 
 var app = express();
 // 统一返回接口
@@ -36,9 +38,14 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // 路由
 app.use("/", indexRouter);
+// 测试接口
+app.use("/test", testRouter);
+
 // 前台报修的接口
 app.use("/api/report/v1", reportRouter);
 // 后台管理系统的接口
 app.use("/api/admin/v1/", adminRouter);
+// 静态资源
+app.use(express.static("public"));
 
 server.listen("3000");
