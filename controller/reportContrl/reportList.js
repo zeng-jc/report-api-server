@@ -1,5 +1,5 @@
 // 存储报修信息
-const dbconfig = require("../../util/dbconfig");
+const db = require("../../util/db");
 
 // 报修列表
 module.exports = function (req, res) {
@@ -16,5 +16,5 @@ module.exports = function (req, res) {
     }
   };
 
-  dbconfig.sqlConnect(sql, sqlArr, callBack);
+  db.query(sql, sqlArr, callBack);
 };

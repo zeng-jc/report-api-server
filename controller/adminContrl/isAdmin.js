@@ -1,5 +1,5 @@
 // 存储报修信息
-const dbconfig = require("../../util/dbconfig.js");
+const db = require("../../util/db.js");
 // token
 const jwt = require("jsonwebtoken");
 // 加密规则
@@ -34,5 +34,5 @@ module.exports = function (req, res, next) {
       next();
     }
   };
-  dbconfig.sqlConnect(sql, sqlArr, callBack);
+  db.query(sql, sqlArr, callBack);
 };

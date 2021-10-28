@@ -1,5 +1,5 @@
 // 存储报修信息
-const dbconfig = require("../../util/dbconfig.js");
+const db = require("../../util/db.js");
 
 /**
  * 获取报修记录
@@ -15,8 +15,13 @@ function record(req, res) {
   if (!/^\d+$/.test(currentpage) || !currentpage >= 1 || !/^\d+$/.test(pagesize)) {
     return res.sendResult(null, 422, "参数有误");
   }
-  if (query !== undefined && Object.prototype.toString.call(JSON.parse(query)).slice(8, -1) === "Object") {
-    query = JSON.parse(query);
+
+  if (query !== undefined && query !== "") {
+    try {
+      query = JSON.parse(query);
+    } catch (error) {
+      return res.sendResult(null, 422, "query格式错误");
+    }
     queryKey = Object.keys(query)[0];
   }
   // 偏移量。分页查询伪代码：sql： "select * from rp_record limit offset, pagesize";
@@ -25,7 +30,7 @@ function record(req, res) {
   let totalSql = "select count(*) as count from rp_record;";
   const totalSqlArr = [];
   new Promise((resolve, reject) => {
-    dbconfig.sqlConnect(totalSql, totalSqlArr, (err, data) => {
+    db.query(totalSql, totalSqlArr, (err, data) => {
       if (err) {
         console.log("报修记录查询失败", err);
         return res.sendResult(null, 500, "系统故障");
@@ -69,7 +74,7 @@ function record(req, res) {
       res.sendResult(rData, 200, "查询成功");
     };
     console.log(sql);
-    dbconfig.sqlConnect(sql, sqlArr, callback);
+    db.query(sql, sqlArr, callback);
   });
 }
 
@@ -91,7 +96,7 @@ function deleteRecord(req, res) {
       res.sendResult(null, 200, "删除成功");
     }
   };
-  dbconfig.sqlConnect(sql, sqlArr, callBack);
+  db.query(sql, sqlArr, callBack);
 }
 
 /**
@@ -113,7 +118,7 @@ function recordId(req, res) {
     }
   };
   console.log(sql);
-  dbconfig.sqlConnect(sql, sqlArr, callBack);
+  db.query(sql, sqlArr, callBack);
 }
 
 /**
@@ -156,7 +161,7 @@ function updateRecord(req, res) {
     res.sendResult(data[0], 200, "编辑成功");
   };
   console.log(sql);
-  dbconfig.sqlConnect(sql, sqlArr, callBack);
+  db.query(sql, sqlArr, callBack);
 }
 
 module.exports = {

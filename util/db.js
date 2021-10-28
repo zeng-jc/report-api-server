@@ -12,14 +12,14 @@ let pool = mysql.createPool({
   queueLimit: 0, // 排队最大数量(0 代表不做限制)
 });
 
-exports.query = function (sql, values, callback) {
+exports.query = function (sql, sqlArr, callback) {
   new Promise(function (resolve, reject) {
     //建立链接
     pool.getConnection(function (err, connection) {
       if (err) {
         return reject(err); // not connected!
       }
-      connection.query(sql, values, function (err, results) {
+      connection.query(sql, sqlArr, function (err, results) {
         //每次查询 回调
         callback(err, results);
         //将链接返回到连接池中，准备由其他人重复使用

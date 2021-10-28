@@ -1,7 +1,6 @@
 // 存储报修信息
-const dbconfig = require("../../util/dbconfig");
+const db = require("../../util/db");
 const fs = require("fs");
-const path = require("path");
 
 // 用户提交报修
 
@@ -51,5 +50,5 @@ module.exports = function (req, res) {
       res.sendResult(null, 200, "报修提交成功");
     }
   };
-  dbconfig.sqlConnect(sql, sqlArr, callBack);
+  db.query(sql, sqlArr, callBack);
 };
