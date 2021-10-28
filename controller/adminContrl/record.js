@@ -120,7 +120,7 @@ function recordId(req, res) {
 }
 
 /**
- *
+ * 更新报修结果
  * @param {*} req
  * @param {*} res
  * @returns
@@ -139,18 +139,8 @@ function updateRecord(req, res) {
   ) {
     return res.sendResult(null, 422, "参数有误");
   }
-  let sql =
-    "update rp_record set rp_result = '" +
-    rp_result +
-    "' ,rp_handler = '" +
-    rp_handler +
-    "' ,hd_time = " +
-    hd_time +
-    " ,rp_state = " +
-    rp_state +
-    " where u_id = " +
-    u_id;
-  const sqlArr = [];
+  let sql = "update rp_record set rp_result = ? ,rp_handler = ? ,hd_time = ? ,rp_state = ? where u_id = ?";
+  const sqlArr = [rp_result, rp_handler, hd_time, rp_state, u_id];
   const callBack = (err, data) => {
     if (err) {
       console.log("查询故障", err);

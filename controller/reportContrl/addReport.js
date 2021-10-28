@@ -13,7 +13,7 @@ module.exports = function (req, res) {
    * 图片处理
    */
   let base64_arr = req.body.rp_pic;
-  const img_arr = [];
+  let img_arr = [];
   // 如果不是数组直接 return
   if (!Array.isArray(base64_arr)) return;
   for (const item of base64_arr) {
@@ -33,19 +33,18 @@ module.exports = function (req, res) {
       }
     });
   }
-
+  if (img_arr.length === 0) img_arr = "[]";
   let sql = `
   insert into rp_record
   (u_name, u_mobile, u_identity, address, d_address, rp_pic, rp_describe, rp_time, rp_state) 
   values 
-  ("${u_name}", "${u_mobile}", "${u_identity}", "${address}", "${d_address}", 
-  "${img_arr}", "${rp_describe}", "${rp_time}","${rp_state}")`;
+  (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   sql = sql.replace(/\n|\r/g, "");
-  let sqlArr = [];
+  let sqlArr = [u_name, u_mobile, u_identity, address, d_address, img_arr, rp_describe, rp_time, rp_state];
   let callBack = (err, data) => {
     if (err) {
       console.log("数据库连接出错", err);
-      res.send("提交失败");
+      res.sendResult(null, 500, "提交失败，系统故障");
     } else {
       res.sendResult(null, 200, "报修提交成功");
     }
