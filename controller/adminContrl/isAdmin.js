@@ -1,5 +1,5 @@
 // 存储报修信息
-const db = require("../../util/db.js");
+const db = require("../../config/db.js");
 // token
 const jwt = require("jsonwebtoken");
 // 加密规则
@@ -22,8 +22,8 @@ module.exports = function (req, res, next) {
   let tokenObj = jwt.verify(token, secret);
 
   const { mg_id, mg_name } = tokenObj;
-  let sql = `select * from rp_manager where mg_id = ${mg_id} and mg_name = '${mg_name}'`;
-  let sqlArr = [];
+  let sql = `select * from rp_manager where mg_id = ? and mg_name = ?`;
+  let sqlArr = [mg_id, mg_name];
   let callBack = (err, data) => {
     if (err) {
       console.log("用户查询失败", err);

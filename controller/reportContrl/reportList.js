@@ -1,5 +1,5 @@
 // 存储报修信息
-const db = require("../../util/db");
+const db = require("../../config/db");
 
 // 报修列表
 module.exports = function (req, res) {

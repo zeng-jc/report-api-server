@@ -1,5 +1,5 @@
 // 存储报修信息
-const db = require("../../util/db");
+const db = require("../../config/db");
 const fs = require("fs");
 
 // 用户提交报修

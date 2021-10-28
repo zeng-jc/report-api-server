@@ -1,5 +1,5 @@
 // 存储报修信息
-const db = require("../../util/db.js");
+const db = require("../../config/db.js");
 // token
 const jwt = require("jsonwebtoken");
 // 加密规则
@@ -7,8 +7,8 @@ const { secret } = require("../../config/tokenSecret.js");
 
 function login(req, res, next) {
   const { username, password } = req.body;
-  let sql = `select * from rp_manager where mg_name='${username}' and mg_pwd='${password}'`;
-  let sqlArr = [];
+  let sql = `select * from rp_manager where mg_name = ? and mg_pwd = ?`;
+  let sqlArr = [username, password];
   let callBack = (err, data) => {
     if (err) {
       console.log("用户查询失败", err);

@@ -1,5 +1,5 @@
 // 存储报修信息
-const db = require("../../util/db.js");
+const db = require("../../config/db.js");
 
 /**
  * 获取报修记录
@@ -27,10 +27,17 @@ function record(req, res) {
   // 偏移量。分页查询伪代码：sql： "select * from rp_record limit offset, pagesize";
   let offset = (currentpage - 1) * pagesize;
   // 1.先查询一共有多少条数据
-  let totalSql = "select count(*) as count from rp_record;";
-  const totalSqlArr = [];
+  let totalSql;
+  let totalArr;
+  if (queryKey === "u_name" || queryKey === "u_mobile") {
+    totalSql = "select count(*) as count from rp_record where " + queryKey + " like ?";
+    totalArr = ["%" + query[queryKey] + "%"];
+  } else {
+    totalSql = "select count(*) as count from rp_record";
+    totalArr = [];
+  }
   new Promise((resolve, reject) => {
-    db.query(totalSql, totalSqlArr, (err, data) => {
+    db.query(totalSql, totalArr, (err, data) => {
       if (err) {
         console.log("报修记录查询失败", err);
         return res.sendResult(null, 500, "系统故障");
@@ -44,23 +51,15 @@ function record(req, res) {
       offset = Math.ceil(totalCount / pagesize);
     }
     let sql;
+    let sqlArr;
     //2.获取报修列表
     if (queryKey === "u_name" || queryKey === "u_mobile") {
-      sql =
-        "select * from rp_record where " +
-        queryKey +
-        " like " +
-        "'%" +
-        query[queryKey] +
-        "%'" +
-        " order by u_id desc limit " +
-        offset +
-        "," +
-        pagesize;
+      sql = "select * from rp_record where " + queryKey + " like ? order by u_id desc limit ?,?";
+      sqlArr = ["%" + query[queryKey] + "%", offset, pagesize];
     } else {
-      sql = "select * from rp_record order by u_id desc limit " + offset + "," + pagesize;
+      sql = "select * from rp_record order by u_id desc limit ?,?";
+      sqlArr = [offset, pagesize];
     }
-    const sqlArr = [];
     const callback = (err, data) => {
       if (err) {
         console.log("报修记录查询失败", err);
@@ -73,7 +72,6 @@ function record(req, res) {
       rData.record = data;
       res.sendResult(rData, 200, "查询成功");
     };
-    console.log(sql);
     db.query(sql, sqlArr, callback);
   });
 }
@@ -86,8 +84,8 @@ function record(req, res) {
  */
 function deleteRecord(req, res) {
   const u_id = req.params.id;
-  let sql = "delete from rp_record where u_id=" + u_id;
-  const sqlArr = [];
+  let sql = "delete from rp_record where u_id = ?";
+  const sqlArr = [u_id];
   const callBack = (err, data) => {
     if (err) {
       console.log("删除失败", err);
@@ -107,8 +105,8 @@ function deleteRecord(req, res) {
  */
 function recordId(req, res) {
   let u_id = req.params.id;
-  let sql = "select * from rp_record where u_id=" + u_id;
-  const sqlArr = [];
+  let sql = "select * from rp_record where u_id = ?";
+  const sqlArr = [u_id];
   const callBack = (err, data) => {
     if (err) {
       console.log("查询故障", err);
