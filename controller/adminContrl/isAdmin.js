@@ -31,6 +31,7 @@ module.exports = function (req, res, next) {
     } else {
       if (data.length === 0) return res.sendResult(data, 422, "登录失败，token错误");
       if (Number(data[0].mg_state) === 0) return res.sendResult(data, 422, "登录失败，当前管理员已被禁用");
+      res.power = data[0].mg_role_id;
       next();
     }
   };

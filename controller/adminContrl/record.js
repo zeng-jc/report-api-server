@@ -8,30 +8,25 @@ const db = require("../../config/db.js");
  * @returns
  */
 function record(req, res) {
+  let condition = "";
+  if (res.power === 2) {
+    condition = " address like '实训楼%'";
+  }
   let query = req.query.query;
-  let queryKey;
   const currentpage = Number(req.query.currentpage);
   const pagesize = Number(req.query.pagesize);
   if (!/^\d+$/.test(currentpage) || !currentpage >= 1 || !/^\d+$/.test(pagesize)) {
     return res.sendResult(null, 422, "参数有误");
   }
 
-  if (query !== undefined && query !== "") {
-    try {
-      query = JSON.parse(query);
-    } catch (error) {
-      return res.sendResult(null, 422, "query格式错误");
-    }
-    queryKey = Object.keys(query)[0];
-  }
   // 偏移量。分页查询伪代码：sql： "select * from rp_record limit offset, pagesize";
   let offset = (currentpage - 1) * pagesize;
   // 1.先查询一共有多少条数据
   let totalSql;
   let totalArr;
-  if (queryKey === "u_name" || queryKey === "u_mobile") {
-    totalSql = "select count(*) as count from rp_record where " + queryKey + " like ?";
-    totalArr = ["%" + query[queryKey] + "%"];
+  if (query !== undefined && query !== "") {
+    totalSql = "select count(*) as count from rp_record where concat(u_mobile,u_name,rp_state,address) like ?";
+    totalArr = ["%" + query + "%"];
   } else {
     totalSql = "select count(*) as count from rp_record";
     totalArr = [];
@@ -39,41 +34,46 @@ function record(req, res) {
   new Promise((resolve, reject) => {
     db.query(totalSql, totalArr, (err, data) => {
       if (err) {
-        console.log("报修记录查询失败", err);
-        return res.sendResult(null, 500, "系统故障");
+        reject(err);
       }
       resolve(data[0].count);
     });
-  }).then(totalCount => {
-    // 判断删除的是不是最后一页的最后一条数据
-    if (totalCount + pagesize <= currentpage * pagesize) {
-      // 最大偏移量（总数据 / 一页显示的条数，再向上取整）
-      offset = Math.ceil(totalCount / pagesize);
-    }
-    let sql;
-    let sqlArr;
-    //2.获取报修列表
-    if (queryKey === "u_name" || queryKey === "u_mobile") {
-      sql = "select * from rp_record where " + queryKey + " like ? order by u_id desc limit ?,?";
-      sqlArr = ["%" + query[queryKey] + "%", offset, pagesize];
-    } else {
-      sql = "select * from rp_record order by u_id desc limit ?,?";
-      sqlArr = [offset, pagesize];
-    }
-    const callback = (err, data) => {
-      if (err) {
-        console.log("报修记录查询失败", err);
-        return res.sendResult(null, 500, "系统故障");
+  })
+    .then(totalCount => {
+      // 判断删除的是不是最后一页的最后一条数据
+      if (totalCount + pagesize <= currentpage * pagesize) {
+        // 最大偏移量（总数据 / 一页显示的条数，再向上取整）
+        offset = Math.ceil(totalCount / pagesize);
       }
-      if (data[0] === undefined) return res.sendResult({ total: 0, currentpage: 0, record: [] }, 200, "未找到");
-      let rData = {};
-      rData.total = totalCount;
-      rData.currentpage = currentpage;
-      rData.record = data;
-      res.sendResult(rData, 200, "查询成功");
-    };
-    db.query(sql, sqlArr, callback);
-  });
+      let sql;
+      let sqlArr;
+      //2.获取报修列表
+      if (query !== "" || query !== "undefined") {
+        sql = "select * from rp_record where concat(u_mobile,u_name,rp_state,address) like ? order by u_id desc limit ?,?";
+        sqlArr = ["%" + query + "%", offset, pagesize];
+      } else {
+        sql = "select * from rp_record order by u_id desc limit ?,?";
+        sqlArr = [offset, pagesize];
+      }
+      // 回调函数
+      const callback = (err, data) => {
+        if (err) {
+          console.log("报修记录查询失败", err);
+          return res.sendResult(null, 500, "系统故障");
+        }
+        if (data[0] === undefined) return res.sendResult({ total: 0, currentpage: 0, record: [] }, 200, "未找到");
+        let rData = {};
+        rData.total = totalCount;
+        rData.currentpage = currentpage;
+        rData.record = data;
+        res.sendResult(rData, 200, "查询成功");
+      };
+      db.query(sql, sqlArr, callback);
+    })
+    .catch(err => {
+      console.log("报修记录查询失败", err);
+      return res.sendResult(null, 500, "系统故障");
+    });
 }
 
 /**
